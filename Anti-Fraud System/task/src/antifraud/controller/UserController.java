@@ -3,6 +3,7 @@ package antifraud.controller;
 import antifraud.model.DTO.UserDTO;
 import antifraud.model.DeletedUser;
 import antifraud.model.UserResponse;
+import antifraud.model.UserRoleRequest;
 import antifraud.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,8 +19,9 @@ public class UserController {
     UserService userService;
 
     @PostMapping("/api/auth/user")
-    ResponseEntity<UserResponse> registerUser(@RequestBody @Valid UserDTO user){
-        return new ResponseEntity(userService.registerUser(user), HttpStatus.CREATED);
+    ResponseEntity<UserResponse> registerUser(@RequestBody @Valid UserDTO userDTO){
+        System.out.println(userDTO);
+        return new ResponseEntity(userService.registerUser(userDTO), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/api/auth/user/{username}")
@@ -31,4 +33,10 @@ public class UserController {
     List<UserResponse> listUsers() {
         return userService.listUsers();
     }
+
+    @PutMapping("/api/auth/role")
+    UserResponse changeUserRole(@RequestBody @Valid UserRoleRequest userRoleRequest){
+        return userService.updateUserRole(userRoleRequest);
+    }
+
 }

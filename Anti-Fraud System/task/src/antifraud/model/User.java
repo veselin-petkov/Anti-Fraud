@@ -10,16 +10,14 @@ import javax.persistence.*;
 @Entity
 @Table(name = "users")
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @Column(unique = true, nullable = false)
     String name;
+    @Column(unique = true, nullable = false)
     String username;
     String password;
-
-
+    Roles role;
     @Override
     public String toString() {
         return "User{" +
@@ -27,6 +25,7 @@ public class User {
                 ", name='" + name + '\'' +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
+                ", role=" + role +
                 '}';
     }
 }

@@ -18,4 +18,13 @@ public class UserDTO {
     @NotNull
     @NotEmpty
     String password;
+
+    @Override
+    public String toString() {
+        return "UserDTO{" +
+                "name='" + name + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                '}';
+    }
 }

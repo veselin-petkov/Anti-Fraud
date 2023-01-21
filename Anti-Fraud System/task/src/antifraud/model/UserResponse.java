@@ -11,4 +11,5 @@ public class UserResponse {
     Long id;
     String name;
     String username;
+    Roles role;
 }
