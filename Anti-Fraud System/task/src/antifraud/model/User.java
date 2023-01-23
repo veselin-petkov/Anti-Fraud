@@ -18,6 +18,9 @@ public class User {
     String username;
     String password;
     Roles role;
+    @Column(name = "account_non_locked")
+    boolean accountNonLocked = false;
+
     @Override
     public String toString() {
         return "User{" +
@@ -26,6 +29,7 @@ public class User {
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", role=" + role +
+                ", accountNonLocked=" + accountNonLocked +
                 '}';
     }
 }

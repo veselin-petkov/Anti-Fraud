@@ -1,9 +1,7 @@
 package antifraud.controller;
 
+import antifraud.model.*;
 import antifraud.model.DTO.UserDTO;
-import antifraud.model.DeletedUser;
-import antifraud.model.UserResponse;
-import antifraud.model.UserRoleRequest;
 import antifraud.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,7 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @AllArgsConstructor
@@ -20,7 +20,6 @@ public class UserController {
 
     @PostMapping("/api/auth/user")
     ResponseEntity<UserResponse> registerUser(@RequestBody @Valid UserDTO userDTO){
-        System.out.println(userDTO);
         return new ResponseEntity(userService.registerUser(userDTO), HttpStatus.CREATED);
     }
 
@@ -38,5 +37,11 @@ public class UserController {
     UserResponse changeUserRole(@RequestBody @Valid UserRoleRequest userRoleRequest){
         return userService.updateUserRole(userRoleRequest);
     }
+
+    @PutMapping("/api/auth/access")
+    UserStatusChange changeAccountStatus(@RequestBody @Valid UserStatusRequest userStatusRequest){
+        return userService.changeUserStatus(userStatusRequest);
+    }
+
 
 }

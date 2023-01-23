@@ -1,20 +1,11 @@
 package antifraud.service;
 
 import antifraud.model.*;
-import antifraud.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
 @Service
 public class TransactionService {
-    @Autowired
-    private final UserRepository userRepository;
-
-
-    public TransactionService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     public TransactionResponse processTransaction(Long amount) {
         if (amount <= 200) {

@@ -4,7 +4,6 @@ import antifraud.mappers.ModelMapper;
 import antifraud.model.*;
 import antifraud.model.DTO.UserDTO;
 import antifraud.repository.UserRepository;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
+
 
 import static antifraud.mappers.ModelMapper.*;
 
@@ -24,14 +23,13 @@ public class UserService {
     PasswordEncoder encoder;
 
     public UserResponse registerUser(UserDTO userDTO) {
-        System.out.println(userDTO);
         User user = userDTOtoUser(userDTO);
-        System.out.println(user);
         user.setPassword(encoder.encode(user.getPassword()));
         try {
             userRepository.save(user);
             if (user.getId() == 1) {
                 user.setRole(Roles.ADMINISTRATOR);
+                user.setAccountNonLocked(true);
                 userRepository.updateRoleById(Roles.ADMINISTRATOR, user.getId());
             } else {
                 user.setRole(Roles.MERCHANT);
@@ -56,20 +54,37 @@ public class UserService {
 
     public UserResponse updateUserRole(UserRoleRequest userRoleRequest) {
         checkUserRole(userRoleRequest.getRole());
-        int updatedEntities = userRepository.updateRoleByUsername(userRoleRequest.getRole(), userRoleRequest.getUsername());
-        System.out.println(updatedEntities);
-        if (updatedEntities == 0) {
+        User user = userRepository.findByUsername(userRoleRequest.getUsername());
+        if (user==null) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        if (user.getRole() != userRoleRequest.getRole()) {
+            userRepository.updateRoleByUsername(userRoleRequest.getRole(), userRoleRequest.getUsername());
+            user.setRole(userRoleRequest.getRole());
+        } else {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
-        else {
-            User user = userRepository.findByUsername(userRoleRequest.getUsername());
-            return userToUserResponse(user);
-        }
+        return userToUserResponse(user);
     }
+
 
     private void checkUserRole(Roles role) {
         if (!role.equals(Roles.SUPPORT) && !role.equals(Roles.MERCHANT)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    public UserStatusChange changeUserStatus(UserStatusRequest userStatusRequest) {
+        User user = userRepository.findByUsername(userStatusRequest.getUsername());
+        if (user.isAccountNonLocked() && userStatusRequest.getOperation().equals(AccountStatus.LOCK)) {
+            user.setAccountNonLocked(false);
+            userRepository.save(user);
+            System.out.println(user);
+            return new UserStatusChange("User " + user.getUsername() + " locked!");
+        } else if (!user.isAccountNonLocked() && userStatusRequest.getOperation().equals(AccountStatus.UNLOCK)) {
+            user.setAccountNonLocked(true);
+            userRepository.save(user);
+            System.out.println(user);
+            return new UserStatusChange("User " + user.getUsername() + " unlocked!");
+        }
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
 }

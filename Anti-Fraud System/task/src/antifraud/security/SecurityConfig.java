@@ -1,5 +1,6 @@
 package antifraud.security;
 
+import antifraud.service.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     RestAuthenticationEntryPoint restAuthenticationEntryPoint;
 
+    @Autowired
+    MyUserDetailsService myUserDetailsService;
+
     public void configure(HttpSecurity http) throws Exception {
         http.httpBasic()
                 .authenticationEntryPoint(restAuthenticationEntryPoint) // Handles auth error
@@ -24,7 +28,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable().headers().frameOptions().disable().and() // for Postman, the H2 console
                 .authorizeRequests() // manage access
                 .antMatchers(HttpMethod.POST, "/api/auth/user").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/antifraud/**").hasRole("MERCHANT")
                 .antMatchers("/actuator/shutdown").permitAll() // needs to run test
+                .antMatchers("/api/auth/access/**").hasRole("ADMINISTRATOR")
+                .antMatchers("/api/auth/role/**").hasRole("ADMINISTRATOR")
+                .antMatchers("/api/auth/user/**").hasRole("ADMINISTRATOR")
+                .antMatchers("/api/auth/list").hasAnyRole("ADMINISTRATOR","SUPPORT")
                 // other matchers
                 //.antMatchers("/h2/***").permitAll()
                 .and()
