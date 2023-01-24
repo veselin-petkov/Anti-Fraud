@@ -2,6 +2,9 @@ package antifraud.controller;
 
 import antifraud.model.*;
 import antifraud.model.DTO.UserDTO;
+import antifraud.model.delete.DeletedUser;
+import antifraud.model.request.UserRoleRequest;
+import antifraud.model.request.UserStatusRequest;
 import antifraud.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -9,9 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @AllArgsConstructor

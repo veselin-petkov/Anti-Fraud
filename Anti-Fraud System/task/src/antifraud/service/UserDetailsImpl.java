@@ -8,11 +8,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-public class MyUserPrincipal implements UserDetails {
+public class UserDetailsImpl implements UserDetails {
     private User user;
     private final List<GrantedAuthority> rolesAndAuthorities;
 
-    public MyUserPrincipal(User user) {
+    public UserDetailsImpl(User user) {
         this.user = user;
         this.rolesAndAuthorities = List.of(new SimpleGrantedAuthority("ROLE_" +user.getRole().toString()));
     }

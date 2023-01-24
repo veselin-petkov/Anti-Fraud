@@ -3,6 +3,9 @@ package antifraud.service;
 import antifraud.mappers.ModelMapper;
 import antifraud.model.*;
 import antifraud.model.DTO.UserDTO;
+import antifraud.model.delete.DeletedUser;
+import antifraud.model.request.UserRoleRequest;
+import antifraud.model.request.UserStatusRequest;
 import antifraud.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-
 
 import static antifraud.mappers.ModelMapper.*;
 
@@ -77,12 +79,10 @@ public class UserService {
         if (user.isAccountNonLocked() && userStatusRequest.getOperation().equals(AccountStatus.LOCK)) {
             user.setAccountNonLocked(false);
             userRepository.save(user);
-            System.out.println(user);
             return new UserStatusChange("User " + user.getUsername() + " locked!");
         } else if (!user.isAccountNonLocked() && userStatusRequest.getOperation().equals(AccountStatus.UNLOCK)) {
             user.setAccountNonLocked(true);
             userRepository.save(user);
-            System.out.println(user);
             return new UserStatusChange("User " + user.getUsername() + " unlocked!");
         }
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST);

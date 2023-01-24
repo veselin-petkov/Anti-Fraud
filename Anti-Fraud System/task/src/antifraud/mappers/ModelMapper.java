@@ -1,12 +1,12 @@
 package antifraud.mappers;
 
+import antifraud.model.DTO.StolenCardDTO;
+import antifraud.model.DTO.SuspiciousIpDTO;
 import antifraud.model.DTO.UserDTO;
+import antifraud.model.StolenCard;
+import antifraud.model.SuspiciousIp;
 import antifraud.model.User;
 import antifraud.model.UserResponse;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Optional;
 
 public class ModelMapper {
 
@@ -21,10 +21,14 @@ public class ModelMapper {
         return new UserResponse(user.getId(), user.getName(), user.getUsername(), user.getRole());
     }
 
-    public static UserResponse optionalUserToUserResponse(Optional<User> user) {
-        if (user.isPresent()){
-            return new UserResponse(user.get().getId(), user.get().getName(), user.get().getUsername(), user.get().getRole());
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    public static SuspiciousIp suspiciousIpDTOtoSuspiciousIp(SuspiciousIpDTO ipDTO){
+        SuspiciousIp ip =  new SuspiciousIp();
+        ip.setIp(ipDTO.getIp());
+        return ip;
+    }
+    public static StolenCard stolenCardDTOtoStolenCard(StolenCardDTO stolenCardDTO) {
+        StolenCard stolenCard = new StolenCard();
+        stolenCard.setNumber(stolenCardDTO.getNumber());
+        return stolenCard;
     }
 }

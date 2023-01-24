@@ -1,4 +1,4 @@
-package antifraud.model;
+package antifraud.model.delete;
 
 import lombok.Getter;
 import lombok.Setter;
