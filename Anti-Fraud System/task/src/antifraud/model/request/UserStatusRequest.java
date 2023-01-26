@@ -1,6 +1,6 @@
 package antifraud.model.request;
 
-import antifraud.model.AccountStatus;
+import antifraud.model.enums.AccountStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

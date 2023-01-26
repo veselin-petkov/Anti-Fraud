@@ -1,30 +1,33 @@
 package antifraud.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    @Autowired
+@AllArgsConstructor
+public class SecurityConfig {
+
     RestAuthenticationEntryPoint restAuthenticationEntryPoint;
-    public void configure(HttpSecurity http) throws Exception {
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.httpBasic()
                 .authenticationEntryPoint(restAuthenticationEntryPoint) // Handles auth error
                 .and()
                 .csrf().disable().headers().frameOptions().disable().and() // for Postman, the H2 console
                 .authorizeRequests() // manage access
-                .antMatchers(HttpMethod.POST, "/api/auth/user").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/antifraud/transaction").hasRole("MERCHANT")
-                .antMatchers("/actuator/shutdown").permitAll() // needs to run test
+                .mvcMatchers(HttpMethod.POST, "/api/auth/user").permitAll()
+                .mvcMatchers(HttpMethod.POST, "/api/antifraud/transaction").hasRole("MERCHANT")
+                .mvcMatchers("/actuator/shutdown").permitAll() // needs to run test
                 // other matchers
 //                .antMatchers("/api/auth/access/**").hasRole("ADMINISTRATOR")
 //                .antMatchers("/api/auth/role/**").hasRole("ADMINISTRATOR")
@@ -37,6 +40,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS); // no session
+        return http.build();
+
     }
     @Bean @Lazy
     public PasswordEncoder getEncoder() {

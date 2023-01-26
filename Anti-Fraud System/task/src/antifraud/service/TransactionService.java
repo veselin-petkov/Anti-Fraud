@@ -1,6 +1,7 @@
 package antifraud.service;
 
 import antifraud.model.*;
+import antifraud.model.enums.TransactionResult;
 import antifraud.model.request.TransactionRequest;
 import antifraud.repository.StolenCardRepository;
 import antifraud.repository.SuspiciousIpRepository;

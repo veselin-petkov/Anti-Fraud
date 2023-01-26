@@ -4,6 +4,8 @@ import antifraud.mappers.ModelMapper;
 import antifraud.model.*;
 import antifraud.model.DTO.UserDTO;
 import antifraud.model.delete.DeletedUser;
+import antifraud.model.enums.AccountStatus;
+import antifraud.model.enums.Roles;
 import antifraud.model.request.UserRoleRequest;
 import antifraud.model.request.UserStatusRequest;
 import antifraud.repository.UserRepository;

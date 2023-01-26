@@ -1,6 +1,6 @@
 package antifraud.model.request;
 
-import antifraud.model.Roles;
+import antifraud.model.enums.Roles;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,6 +1,6 @@
 package antifraud.repository;
 
-import antifraud.model.Roles;
+import antifraud.model.enums.Roles;
 import antifraud.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

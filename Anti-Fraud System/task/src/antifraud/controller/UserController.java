@@ -22,7 +22,7 @@ public class UserController {
 
     @PostMapping("/api/auth/user")
     ResponseEntity<UserResponse> registerUser(@Valid @RequestBody UserDTO userDTO){
-        return new ResponseEntity(userService.registerUser(userDTO), HttpStatus.CREATED);
+        return new ResponseEntity<>(userService.registerUser(userDTO), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('ADMINISTRATOR')")

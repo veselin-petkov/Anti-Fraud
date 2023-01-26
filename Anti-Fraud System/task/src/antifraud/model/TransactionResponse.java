@@ -1,5 +1,6 @@
 package antifraud.model;
 
+import antifraud.model.enums.TransactionResult;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

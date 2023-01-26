@@ -1,4 +1,4 @@
-package antifraud.model;
+package antifraud.model.enums;
 
 public enum Roles {
     ADMINISTRATOR,MERCHANT,SUPPORT,ANONYMOUS

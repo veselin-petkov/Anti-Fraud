@@ -1,6 +1,6 @@
 package antifraud.model.request;
 
-import antifraud.model.Region;
+import antifraud.model.enums.Region;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
