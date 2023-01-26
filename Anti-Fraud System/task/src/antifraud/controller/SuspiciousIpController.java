@@ -6,6 +6,7 @@ import antifraud.model.SuspiciousIp;
 import antifraud.service.SuspiciousIpService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -17,18 +18,19 @@ import java.util.List;
 public class SuspiciousIpController {
     SuspiciousIpService suspiciousIpService;
 
-    //@ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('SUPPORT')")
     @PostMapping("/api/antifraud/suspicious-ip")
-    SuspiciousIp addSuspiciousIp(@RequestBody SuspiciousIpDTO ip) {
-        System.out.println(ip);
+    SuspiciousIp addSuspiciousIp(@Valid @RequestBody SuspiciousIpDTO ip) {
         return suspiciousIpService.addSuspiciousIp(ip)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT));
     }
+    @PreAuthorize("hasRole('SUPPORT')")
     @GetMapping("/api/antifraud/suspicious-ip")
     List<SuspiciousIp> listSuspiciousIp(){
         return suspiciousIpService.listSuspiciousIp();
     }
 
+    @PreAuthorize("hasRole('SUPPORT')")
     @DeleteMapping("/api/antifraud/suspicious-ip/{ip}")
     DeletedIp deleteSuspiciousIp(@PathVariable String ip) {
         if (suspiciousIpService.deleteSuspiciousIp(ip)) {
@@ -37,7 +39,4 @@ public class SuspiciousIpController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
-
-
-
 }

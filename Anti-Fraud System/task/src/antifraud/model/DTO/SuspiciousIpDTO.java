@@ -10,7 +10,6 @@ import javax.validation.constraints.NotEmpty;
 @Setter
 public class SuspiciousIpDTO {
 
-    @NotEmpty
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     Long id;
     @NotEmpty

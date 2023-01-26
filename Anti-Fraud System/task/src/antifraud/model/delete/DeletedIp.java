@@ -1,14 +1,11 @@
 package antifraud.model.delete;
 
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
-public class DeletedIp {
-    String status;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record DeletedIp(@JsonProperty("status") String ip) {
 
     public DeletedIp(String ip) {
-        this.status =  "IP "+ ip +" successfully removed!";
+        this.ip =  "IP "+ ip +" successfully removed!";
     }
 }

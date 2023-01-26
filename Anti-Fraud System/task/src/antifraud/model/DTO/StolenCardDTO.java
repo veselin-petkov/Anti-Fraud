@@ -10,7 +10,6 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 public class StolenCardDTO {
-    @NotNull
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     Long id;
     @NotEmpty

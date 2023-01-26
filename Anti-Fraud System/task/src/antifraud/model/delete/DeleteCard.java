@@ -1,15 +1,9 @@
 package antifraud.model.delete;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Getter
-@Setter
-public class DeleteCard {
-    String status;
-
+public record DeleteCard(@JsonProperty("status") String number) {
     public DeleteCard(String number) {
-        this.status =  "Card "+ number +" successfully removed!";
+        this.number =  "Card "+ number +" successfully removed!";
     }
-
 }

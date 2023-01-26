@@ -6,6 +6,7 @@ import antifraud.model.StolenCard;
 import antifraud.service.StolenCardService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -17,17 +18,20 @@ import java.util.List;
 public class StolenCardController {
     StolenCardService stolenCardService;
 
+    @PreAuthorize("hasRole('SUPPORT')")
     @PostMapping("/api/antifraud/stolencard")
-    StolenCard addStolenCard(@RequestBody  StolenCardDTO stolenCardDTO){
+    StolenCard addStolenCard(@Valid @RequestBody StolenCardDTO stolenCardDTO){
         return stolenCardService.addStolenCard(stolenCardDTO)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT));
     }
 
+    @PreAuthorize("hasRole('SUPPORT')")
     @GetMapping("/api/antifraud/stolencard")
     List<StolenCard> listStolenCards(){
         return stolenCardService.listStolenCards();
     }
 
+    @PreAuthorize("hasRole('SUPPORT')")
     @DeleteMapping("/api/antifraud/stolencard/{number}")
     DeleteCard deleteStolenCard(@PathVariable String number) {
         if (stolenCardService.deleteStolenCard(number)) {
