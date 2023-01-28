@@ -21,7 +21,7 @@ public class StolenCardService {
 
     @Transactional
     public Optional<StolenCard> addStolenCard(StolenCardDTO stolenCardDTO) {
-        checkCardNumber(stolenCardDTO.getNumber());
+       // checkCardNumber(stolenCardDTO.getNumber());
         if (stolenCardRepository.existsByNumber(stolenCardDTO.getNumber())) {
             return Optional.empty();
         }

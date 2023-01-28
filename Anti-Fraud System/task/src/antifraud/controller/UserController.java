@@ -1,10 +1,11 @@
 package antifraud.controller;
 
-import antifraud.model.*;
 import antifraud.model.DTO.UserDTO;
 import antifraud.model.delete.DeletedUser;
 import antifraud.model.request.UserRoleRequest;
 import antifraud.model.request.UserStatusRequest;
+import antifraud.model.response.UserResponse;
+import antifraud.model.response.UserStatusChangeResponse;
 import antifraud.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,8 +27,8 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ADMINISTRATOR')")
-    @DeleteMapping("/api/auth/user/{username}")
-    DeletedUser deleteUser(@PathVariable String username){
+    @DeleteMapping({"/api/auth/user/{username}", "/api/auth/user"})
+    DeletedUser deleteUser(@PathVariable(required = false) String username){
         return userService.deleteUser(username);
     }
 
@@ -46,7 +47,7 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMINISTRATOR')")
     @PutMapping("/api/auth/access")
-    UserStatusChange changeAccountStatus(@Valid @RequestBody UserStatusRequest userStatusRequest){
+    UserStatusChangeResponse changeAccountStatus(@Valid @RequestBody UserStatusRequest userStatusRequest){
         return userService.changeUserStatus(userStatusRequest);
     }
 }

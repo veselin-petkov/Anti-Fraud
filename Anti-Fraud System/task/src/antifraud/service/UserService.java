@@ -8,6 +8,8 @@ import antifraud.model.enums.AccountStatus;
 import antifraud.model.enums.Roles;
 import antifraud.model.request.UserRoleRequest;
 import antifraud.model.request.UserStatusRequest;
+import antifraud.model.response.UserResponse;
+import antifraud.model.response.UserStatusChangeResponse;
 import antifraud.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -76,16 +78,16 @@ public class UserService {
         }
     }
 
-    public UserStatusChange changeUserStatus(UserStatusRequest userStatusRequest) {
+    public UserStatusChangeResponse changeUserStatus(UserStatusRequest userStatusRequest) {
         User user = userRepository.findByUsername(userStatusRequest.getUsername());
         if (user.isAccountNonLocked() && userStatusRequest.getOperation().equals(AccountStatus.LOCK)) {
             user.setAccountNonLocked(false);
             userRepository.save(user);
-            return new UserStatusChange("User " + user.getUsername() + " locked!");
+            return new UserStatusChangeResponse("User " + user.getUsername() + " locked!");
         } else if (!user.isAccountNonLocked() && userStatusRequest.getOperation().equals(AccountStatus.UNLOCK)) {
             user.setAccountNonLocked(true);
             userRepository.save(user);
-            return new UserStatusChange("User " + user.getUsername() + " unlocked!");
+            return new UserStatusChangeResponse("User " + user.getUsername() + " unlocked!");
         }
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }

@@ -21,7 +21,6 @@ public class SuspiciousIpService {
 
     @Transactional
     public Optional<SuspiciousIp> addSuspiciousIp(SuspiciousIpDTO ipDTO) {
-        System.out.println(ipDTO.getIp());
         checkIpFormat(ipDTO.getIp());
         if (suspiciousIpRepository.existsByIp(ipDTO.getIp())) {
             return Optional.empty();

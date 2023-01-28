@@ -29,14 +29,14 @@ public class SecurityConfig {
                 .mvcMatchers(HttpMethod.POST, "/api/antifraud/transaction").hasRole("MERCHANT")
                 .mvcMatchers("/actuator/shutdown").permitAll() // needs to run test
                 // other matchers
-//                .antMatchers("/api/auth/access/**").hasRole("ADMINISTRATOR")
-//                .antMatchers("/api/auth/role/**").hasRole("ADMINISTRATOR")
-//                .antMatchers("/api/auth/user/**").hasRole("ADMINISTRATOR")
-//                .antMatchers("/api/auth/list").hasAnyRole("ADMINISTRATOR","SUPPORT")
-//                .antMatchers("/api/antifraud/suspicious-ip/**").hasRole("SUPPORT")
-//                .antMatchers("/api/antifraud/stolencard/**").hasRole("SUPPORT")
-//                .antMatchers("/api/antifraud/suspicious-ip").hasRole("SUPPORT")
-//                .antMatchers("/api/antifraud/stolencard").hasRole("SUPPORT")
+                .antMatchers("/api/auth/access/**").hasRole("ADMINISTRATOR")
+                .antMatchers("/api/auth/role/**").hasRole("ADMINISTRATOR")
+                .antMatchers("/api/auth/user/**").hasRole("ADMINISTRATOR")
+                .antMatchers("/api/auth/list").hasAnyRole("ADMINISTRATOR","SUPPORT")
+                .antMatchers("/api/antifraud/suspicious-ip/**").hasRole("SUPPORT")
+                .antMatchers("/api/antifraud/stolencard/**").hasRole("SUPPORT")
+                .antMatchers("/api/antifraud/suspicious-ip").hasRole("SUPPORT")
+                .antMatchers("/api/antifraud/stolencard").hasRole("SUPPORT")
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS); // no session

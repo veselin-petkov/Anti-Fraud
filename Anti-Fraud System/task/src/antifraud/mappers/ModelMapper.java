@@ -6,7 +6,7 @@ import antifraud.model.DTO.UserDTO;
 import antifraud.model.StolenCard;
 import antifraud.model.SuspiciousIp;
 import antifraud.model.User;
-import antifraud.model.UserResponse;
+import antifraud.model.response.UserResponse;
 
 public class ModelMapper {
 

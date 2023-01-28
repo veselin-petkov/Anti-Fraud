@@ -1,7 +1,7 @@
 package antifraud.controller;
 
-import antifraud.model.*;
 import antifraud.model.request.TransactionRequest;
+import antifraud.model.response.TransactionResponse;
 import antifraud.service.TransactionService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;

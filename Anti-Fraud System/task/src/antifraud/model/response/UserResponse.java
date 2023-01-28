@@ -1,4 +1,4 @@
-package antifraud.model;
+package antifraud.model.response;
 
 import antifraud.model.enums.Roles;
 import lombok.AllArgsConstructor;
