@@ -13,25 +13,23 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.validation.Valid;
 import java.util.List;
 
-@RestController
+@PreAuthorize("hasRole('SUPPORT')")
+@RestController("/api/antifraud/suspicious-ip")
 @AllArgsConstructor
 public class SuspiciousIpController {
     SuspiciousIpService suspiciousIpService;
 
-    @PreAuthorize("hasRole('SUPPORT')")
-    @PostMapping("/api/antifraud/suspicious-ip")
+    @PostMapping
     SuspiciousIp addSuspiciousIp(@Valid @RequestBody SuspiciousIpDTO ip) {
         return suspiciousIpService.addSuspiciousIp(ip)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT));
     }
-    @PreAuthorize("hasRole('SUPPORT')")
-    @GetMapping("/api/antifraud/suspicious-ip")
+    @GetMapping
     List<SuspiciousIp> listSuspiciousIp(){
         return suspiciousIpService.listSuspiciousIp();
     }
 
-    @PreAuthorize("hasRole('SUPPORT')")
-    @DeleteMapping("/api/antifraud/suspicious-ip/{ip}")
+    @DeleteMapping("/{ip}")
     DeletedIp deleteSuspiciousIp(@PathVariable String ip) {
         if (suspiciousIpService.deleteSuspiciousIp(ip)) {
             return new DeletedIp(ip);

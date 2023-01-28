@@ -5,7 +5,9 @@ import antifraud.model.DTO.SuspiciousIpDTO;
 import antifraud.model.DTO.UserDTO;
 import antifraud.model.StolenCard;
 import antifraud.model.SuspiciousIp;
+import antifraud.model.Transaction;
 import antifraud.model.User;
+import antifraud.model.request.TransactionRequest;
 import antifraud.model.response.UserResponse;
 
 public class ModelMapper {
@@ -30,5 +32,15 @@ public class ModelMapper {
         StolenCard stolenCard = new StolenCard();
         stolenCard.setNumber(stolenCardDTO.getNumber());
         return stolenCard;
+    }
+
+    public static Transaction transactionRequestToTransaction(TransactionRequest transactionRequest){
+        Transaction transaction = new Transaction();
+        transaction.setAmount(transactionRequest.getAmount());
+        transaction.setIp(transactionRequest.getIp());
+        transaction.setNumber(transactionRequest.getNumber());
+        transaction.setRegion(transactionRequest.getRegion());
+        transaction.setDate(transactionRequest.getDate());
+        return transaction;
     }
 }

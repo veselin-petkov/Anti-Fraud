@@ -24,8 +24,6 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "transaction_requests")
 public class TransactionRequest {
 
     @Id

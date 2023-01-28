@@ -13,26 +13,24 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.validation.Valid;
 import java.util.List;
 
-@RestController
+@PreAuthorize("hasRole('SUPPORT')")
+@RestController("/api/antifraud/stolencard")
 @AllArgsConstructor
 public class StolenCardController {
     StolenCardService stolenCardService;
 
-    @PreAuthorize("hasRole('SUPPORT')")
-    @PostMapping("/api/antifraud/stolencard")
+    @PostMapping
     StolenCard addStolenCard(@Valid @RequestBody StolenCardDTO stolenCardDTO){
         return stolenCardService.addStolenCard(stolenCardDTO)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT));
     }
 
-    @PreAuthorize("hasRole('SUPPORT')")
-    @GetMapping("/api/antifraud/stolencard")
+    @GetMapping
     List<StolenCard> listStolenCards(){
         return stolenCardService.listStolenCards();
     }
 
-    @PreAuthorize("hasRole('SUPPORT')")
-    @DeleteMapping("/api/antifraud/stolencard/{number}")
+    @DeleteMapping("/{number}")
     DeleteCard deleteStolenCard(@PathVariable String number) {
         if (stolenCardService.deleteStolenCard(number)) {
             return new DeleteCard(number);

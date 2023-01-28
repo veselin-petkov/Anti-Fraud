@@ -16,37 +16,37 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-@RestController
+@RestController("/api/auth")
 @AllArgsConstructor
 public class UserController {
     UserService userService;
 
-    @PostMapping("/api/auth/user")
+    @PostMapping("/user")
     ResponseEntity<UserResponse> registerUser(@Valid @RequestBody UserDTO userDTO){
         return new ResponseEntity<>(userService.registerUser(userDTO), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('ADMINISTRATOR')")
-    @DeleteMapping({"/api/auth/user/{username}", "/api/auth/user"})
+    @DeleteMapping({"/user/{username}", "/api/auth/user"})
     DeletedUser deleteUser(@PathVariable(required = false) String username){
         return userService.deleteUser(username);
     }
 
 
     @PreAuthorize("hasAnyRole('ADMINISTRATOR','SUPPORT')")
-    @GetMapping("/api/auth/list")
+    @GetMapping("/list")
     List<UserResponse> listUsers() {
         return userService.listUsers();
     }
 
     @PreAuthorize("hasRole('ADMINISTRATOR')")
-    @PutMapping("/api/auth/role")
+    @PutMapping("/role")
     UserResponse changeUserRole(@Valid @RequestBody UserRoleRequest userRoleRequest){
         return userService.updateUserRole(userRoleRequest);
     }
 
     @PreAuthorize("hasRole('ADMINISTRATOR')")
-    @PutMapping("/api/auth/access")
+    @PutMapping("/access")
     UserStatusChangeResponse changeAccountStatus(@Valid @RequestBody UserStatusRequest userStatusRequest){
         return userService.changeUserStatus(userStatusRequest);
     }
