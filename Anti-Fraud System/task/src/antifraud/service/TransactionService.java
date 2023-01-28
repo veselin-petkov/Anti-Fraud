@@ -55,26 +55,24 @@ public class TransactionService {
             }
         }
         transactionRequestRepository.save(transactionRequest);
-
-
         List<TransactionRequest> transactionHistory = transactionRequestRepository.findByNumberAndDateBetween
                 (transactionRequest.getNumber(),transactionRequest.getDate().minusHours(1), transactionRequest.getDate());
 
-        var nUniqueIps = transactionHistory.stream().map(TransactionRequest::getIp).distinct().count();
-        var nUniqueRegions = transactionHistory.stream().map(TransactionRequest::getRegion).distinct().count();
+        long uniqueIps = transactionHistory.stream().map(TransactionRequest::getIp).distinct().count();
+        long uniqueRegions = transactionHistory.stream().map(TransactionRequest::getRegion).distinct().count();
 
-        if (checkNumberOf(nUniqueRegions).equals(PROHIBITED)) {
+        if (checkNumberOf(uniqueRegions).equals(PROHIBITED)) {
             transactionResponse.setResult(PROHIBITED);
             info.add("region-correlation");
-        }else if (checkNumberOf(nUniqueRegions).equals(MANUAL_PROCESSING)){
+        }else if (checkNumberOf(uniqueRegions).equals(MANUAL_PROCESSING)){
             transactionResponse.setResult(MANUAL_PROCESSING);
             info.add("region-correlation");
         }
 
-        if (checkNumberOf(nUniqueIps).equals(PROHIBITED)) {
+        if (checkNumberOf(uniqueIps).equals(PROHIBITED)) {
             transactionResponse.setResult(PROHIBITED);
             info.add("ip-correlation");
-        }else if (checkNumberOf(nUniqueIps).equals(MANUAL_PROCESSING)){
+        }else if (checkNumberOf(uniqueIps).equals(MANUAL_PROCESSING)){
             transactionResponse.setResult(MANUAL_PROCESSING);
             info.add("ip-correlation");
         }
@@ -89,8 +87,10 @@ public class TransactionService {
     }
 
     private TransactionResult checkNumberOf(long nUniqueRequests) {
-        return  nUniqueRequests <= 2 ? ALLOWED :
-                nUniqueRequests == 3 ? MANUAL_PROCESSING :
+        if (nUniqueRequests <= 2) {
+            return ALLOWED;
+        }
+        return nUniqueRequests == 3 ? MANUAL_PROCESSING :
                         PROHIBITED;
     }
 
