@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static antifraud.model.enums.TransactionResult.*;
+
 @Slf4j
 @Service
 public class TransactionService {
@@ -29,24 +31,24 @@ public class TransactionService {
 
         boolean manual = false;
         if (transactionRequest.getAmount() <= 200) {
-            transactionResponse.setResult(TransactionResult.ALLOWED);
+            transactionResponse.setResult(ALLOWED);
         } else if (transactionRequest.getAmount() <= 1500) {
-            transactionResponse.setResult(TransactionResult.MANUAL_PROCESSING);
+            transactionResponse.setResult(MANUAL_PROCESSING);
             info.add("amount");
             manual = true;
         } else {
-            transactionResponse.setResult(TransactionResult.PROHIBITED);
+            transactionResponse.setResult(PROHIBITED);
             info.add("amount");
         }
         if (checkForStolenCard(transactionRequest.getNumber())) {
-            transactionResponse.setResult(TransactionResult.PROHIBITED);
+            transactionResponse.setResult(PROHIBITED);
             info.add("card-number");
             if (manual) {
                 info.remove("amount");
             }
         }
         if (checkForSuspiciousIp(transactionRequest.getIp())) {
-            transactionResponse.setResult(TransactionResult.PROHIBITED);
+            transactionResponse.setResult(PROHIBITED);
             info.add("ip");
             if (manual) {
                 info.remove("amount");
@@ -54,21 +56,26 @@ public class TransactionService {
         }
         transactionRequestRepository.save(transactionRequest);
 
-        String region = checkTransactionRegionsInLastHour(transactionRequest);
-        if (region.equals("prohibited")) {
-            transactionResponse.setResult(TransactionResult.PROHIBITED);
+
+        List<TransactionRequest> transactionHistory = transactionRequestRepository.findByNumberAndDateBetween
+                (transactionRequest.getNumber(),transactionRequest.getDate().minusHours(1), transactionRequest.getDate());
+
+        var nUniqueIps = transactionHistory.stream().map(TransactionRequest::getIp).distinct().count();
+        var nUniqueRegions = transactionHistory.stream().map(TransactionRequest::getRegion).distinct().count();
+
+        if (checkNumberOf(nUniqueRegions).equals(PROHIBITED)) {
+            transactionResponse.setResult(PROHIBITED);
             info.add("region-correlation");
-        }else if (region.equals("manual")){
-            transactionResponse.setResult(TransactionResult.MANUAL_PROCESSING);
+        }else if (checkNumberOf(nUniqueRegions).equals(MANUAL_PROCESSING)){
+            transactionResponse.setResult(MANUAL_PROCESSING);
             info.add("region-correlation");
         }
 
-        String ips = checkTransactionIpsInLastHour(transactionRequest);
-        if (ips.equals("prohibited")) {
-            transactionResponse.setResult(TransactionResult.PROHIBITED);
+        if (checkNumberOf(nUniqueIps).equals(PROHIBITED)) {
+            transactionResponse.setResult(PROHIBITED);
             info.add("ip-correlation");
-        }else if (ips.equals("manual")){
-            transactionResponse.setResult(TransactionResult.MANUAL_PROCESSING);
+        }else if (checkNumberOf(nUniqueIps).equals(MANUAL_PROCESSING)){
+            transactionResponse.setResult(MANUAL_PROCESSING);
             info.add("ip-correlation");
         }
 
@@ -81,32 +88,10 @@ public class TransactionService {
         return transactionResponse;
     }
 
-    private String checkTransactionIpsInLastHour(TransactionRequest transactionRequest) {
-        List<String> ipCount = transactionRequestRepository.countOfRequestedIps
-                (transactionRequest.getDate().minusHours(1), transactionRequest.getDate());
-        System.out.println(ipCount);
-        if (ipCount.size() < 3) {
-            return "allow";
-        } else if (ipCount.size() == 3) {
-            return "manual";
-        } else {
-            return "prohibited";
-        }
-    }
-
-    private String checkTransactionRegionsInLastHour(TransactionRequest transactionRequest) {
-        List<Long> regionsCount = transactionRequestRepository.countOfRequestedRegions
-                (transactionRequest.getDate().minusHours(1), transactionRequest.getDate());
-        System.out.println(regionsCount);
-
-        if (regionsCount.size() < 3) {
-            return "allow";
-        } else if (regionsCount.size() == 3) {
-            return "manual";
-        } else {
-            return "prohibited";
-        }
-
+    private TransactionResult checkNumberOf(long nUniqueRequests) {
+        return  nUniqueRequests <= 2 ? ALLOWED :
+                nUniqueRequests == 3 ? MANUAL_PROCESSING :
+                        PROHIBITED;
     }
 
     private boolean checkForStolenCard(String number) {

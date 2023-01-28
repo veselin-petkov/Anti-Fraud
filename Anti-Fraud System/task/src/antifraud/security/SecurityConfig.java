@@ -37,6 +37,8 @@ public class SecurityConfig {
                 .antMatchers("/api/antifraud/stolencard/**").hasRole("SUPPORT")
                 .antMatchers("/api/antifraud/suspicious-ip").hasRole("SUPPORT")
                 .antMatchers("/api/antifraud/stolencard").hasRole("SUPPORT")
+//                .mvcMatchers("/api/**").authenticated()
+//                .anyRequest().denyAll()
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS); // no session
