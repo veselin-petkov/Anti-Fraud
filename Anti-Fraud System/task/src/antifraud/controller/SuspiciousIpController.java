@@ -14,7 +14,8 @@ import javax.validation.Valid;
 import java.util.List;
 
 @PreAuthorize("hasRole('SUPPORT')")
-@RestController("/api/antifraud/suspicious-ip")
+@RestController
+@RequestMapping("/api/antifraud/suspicious-ip")
 @AllArgsConstructor
 public class SuspiciousIpController {
     SuspiciousIpService suspiciousIpService;

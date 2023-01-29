@@ -1,10 +1,12 @@
 package antifraud.service;
 
+import antifraud.model.Card;
 import antifraud.model.TransactionFeedback;
 import antifraud.model.Transaction;
 import antifraud.model.enums.TransactionResult;
 import antifraud.model.request.TransactionRequest;
 import antifraud.model.response.TransactionResponse;
+import antifraud.repository.CardRepository;
 import antifraud.repository.TransactionRepository;
 import antifraud.repository.StolenCardRepository;
 import antifraud.repository.SuspiciousIpRepository;
@@ -16,7 +18,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static antifraud.mappers.ModelMapper.transactionRequestToTransaction;
 import static antifraud.model.enums.TransactionResult.*;
@@ -30,16 +31,45 @@ public class TransactionService {
     StolenCardRepository stolenCardRepository;
     @Autowired
     SuspiciousIpRepository suspiciousIpRepository;
+    @Autowired
+    CardRepository cardRepository;
 
     public TransactionResponse processTransaction(TransactionRequest transactionRequest) {
         TransactionResponse transactionResponse = new TransactionResponse();
         List<String> info = new ArrayList<>();
         Transaction transaction = transactionRequestToTransaction(transactionRequest);
-
         boolean manual = false;
-        if (transactionRequest.getAmount() <= 200) {
+
+        Card card = cardRepository.findByNumber(transactionRequest.getNumber());
+
+        int max_ALLOWED = 200;
+        int max_MANUAL = 1500;
+
+        if (card != null) {
+            max_ALLOWED = card.getMax_ALLOWED();
+            max_MANUAL = card.getMax_MANUAL();
+        } else {
+            card = new Card();
+            card.setNumber(transactionRequest.getNumber());
+            card.setMax_ALLOWED(max_ALLOWED);
+            card.setMax_MANUAL(max_MANUAL);
+            cardRepository.save(card);
+        }
+//        try {
+//            max_ALLOWED = cardRepository.findMaxAllowedByNumber(transactionRequest.getNumber());
+//            max_MANUAL = cardRepository.findMaxManualByNumber(transactionRequest.getNumber());
+//            log.info("try catch passed successfully");
+//            System.out.println("try catch passed successfully");
+//        }catch (RuntimeException ex){
+//            log.info(String.valueOf(ex));
+//            log.info("try catched is not passed");
+//            System.out.println("try catched is not passed");
+//        }
+        log.info(String.valueOf(max_ALLOWED));
+        System.out.println(max_ALLOWED);
+        if (transactionRequest.getAmount() <= max_ALLOWED) {
             transactionResponse.setResult(ALLOWED);
-        } else if (transactionRequest.getAmount() <= 1500) {
+        } else if (transactionRequest.getAmount() <= max_MANUAL) {
             transactionResponse.setResult(MANUAL_PROCESSING);
             info.add("amount");
             manual = true;
@@ -62,6 +92,7 @@ public class TransactionService {
             }
         }
         transactionRepository.save(transaction);
+
         List<Transaction> transactionHistory = transactionRepository.findByNumberAndDateBetween
                 (transactionRequest.getNumber(), transactionRequest.getDate().minusHours(1), transactionRequest.getDate());
 
@@ -114,10 +145,44 @@ public class TransactionService {
     public Transaction transactionFeedback(TransactionFeedback transactionFeedback) {
         Transaction transaction = transactionRepository.findById(transactionFeedback.getTransactionId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        if (transaction.getFeedback() != null) {
+
+        Card card = cardRepository.findByNumber(transaction.getNumber());
+
+        int max_ALLOWED = card.getMax_ALLOWED();
+        int max_MANUAL = card.getMax_MANUAL();
+
+        if (transactionFeedback.getFeedback() == transaction.getResult()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        if (!transaction.getFeedback().equals("")) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
-        } else {
+        } else if (transactionFeedback.getFeedback() == ALLOWED) {
             transaction.setFeedback(transactionFeedback.getFeedback());
+            max_ALLOWED = (int) Math.ceil((0.8 * max_ALLOWED) + (0.2 * transaction.getAmount()));
+            cardRepository.updateMax_ALLOWEDByNumber(max_ALLOWED, transaction.getNumber());
+            if (transaction.getResult() == PROHIBITED) {
+                max_MANUAL = (int) Math.ceil((0.8 * max_MANUAL) + (0.2 * transaction.getAmount()));
+                cardRepository.updateMax_MANUALByNumber(max_MANUAL, transaction.getNumber());
+            }
+        } else if (transactionFeedback.getFeedback() == MANUAL_PROCESSING) {
+            transaction.setFeedback(transactionFeedback.getFeedback());
+            if (transaction.getResult() == ALLOWED) {
+                max_ALLOWED = (int) Math.ceil((0.8 * max_ALLOWED) - (0.2 * transaction.getAmount()));
+                cardRepository.updateMax_ALLOWEDByNumber(max_ALLOWED, transaction.getNumber());
+            } else {
+                max_MANUAL = (int) Math.ceil((0.8 * max_MANUAL) + (0.2 * transaction.getAmount()));
+                cardRepository.updateMax_MANUALByNumber(max_MANUAL, transaction.getNumber());
+            }
+        } else if (transactionFeedback.getFeedback() == PROHIBITED) {
+            if (transaction.getResult() == ALLOWED) {
+                transaction.setFeedback(transactionFeedback.getFeedback());
+                max_ALLOWED = (int) Math.ceil((0.8 * max_ALLOWED) - (0.2 * transaction.getAmount()));
+                cardRepository.updateMax_ALLOWEDByNumber(max_ALLOWED, transaction.getNumber());
+            }
+            transaction.setFeedback(transactionFeedback.getFeedback());
+            max_MANUAL = (int) Math.ceil((0.8 * max_MANUAL) - (0.2 * transaction.getAmount()));
+            cardRepository.updateMax_MANUALByNumber(max_MANUAL, transaction.getNumber());
         }
         return transaction;
     }
@@ -128,9 +193,9 @@ public class TransactionService {
 
     public List<Transaction> getTransactionById(String number) {
         List<Transaction> list = transactionRepository.findAllByNumber(number);
-        if (list.isEmpty()){
+        if (list.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }else {
+        } else {
             return list;
         }
     }

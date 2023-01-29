@@ -2,12 +2,9 @@ package antifraud.model;
 
 import antifraud.model.enums.Region;
 import antifraud.model.enums.TransactionResult;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Getter
@@ -15,17 +12,22 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
 @Table(name = "transaction")
 public class Transaction {
     @Id
     @GeneratedValue
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    Long id;
+    @Column(name = "id")
+    private Long transactionId;
     Long amount;
     String ip;
     String number;
     Region region;
     LocalDateTime date;
     TransactionResult result;
-    String feedback;
+    TransactionResult feedback;
+
+    public String getFeedback() {
+        return feedback == null ? "" : feedback.name();
+    }
 }

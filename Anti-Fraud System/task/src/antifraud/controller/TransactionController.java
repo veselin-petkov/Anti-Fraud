@@ -8,34 +8,40 @@ import antifraud.service.TransactionService;
 import lombok.AllArgsConstructor;
 import org.hibernate.validator.constraints.CreditCardNumber;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 
-@PreAuthorize("hasRole('MERCHANT')")
-@RestController("/api/antifraud")
+@Validated
+@RestController
+@RequestMapping("/api/antifraud")
 @AllArgsConstructor
 public class TransactionController {
     TransactionService transactionService;
 
+    @PreAuthorize("hasRole('MERCHANT')")
     @PostMapping("/transaction")
-    TransactionResponse transaction(@Valid @RequestBody TransactionRequest transactionRequest){
+    TransactionResponse transaction(@Valid @RequestBody TransactionRequest transactionRequest) {
         return transactionService.processTransaction(transactionRequest);
     }
 
+    @PreAuthorize("hasRole('SUPPORT')")
     @PutMapping("/transaction")
-    Transaction transactionWithFeedback(@Valid @RequestBody TransactionFeedback transactionFeedback){
+    Transaction transactionWithFeedback(@Valid @RequestBody TransactionFeedback transactionFeedback) {
         return transactionService.transactionFeedback(transactionFeedback);
     }
 
+    @PreAuthorize("hasRole('SUPPORT')")
     @GetMapping("/history")
-    List<Transaction> transactionHistory(){
+    List<Transaction> transactionHistory() {
         return transactionService.listTransactions();
     }
 
+    @PreAuthorize("hasRole('SUPPORT')")
     @GetMapping("/history/{number}")
-    List<Transaction> getTransactionById(@CreditCardNumber @PathVariable String number){
+    List<Transaction> getTransactionById(@CreditCardNumber @PathVariable("number") String number) {
         return transactionService.getTransactionById(number);
     }
 }

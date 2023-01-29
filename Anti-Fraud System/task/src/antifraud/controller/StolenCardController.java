@@ -14,19 +14,20 @@ import javax.validation.Valid;
 import java.util.List;
 
 @PreAuthorize("hasRole('SUPPORT')")
-@RestController("/api/antifraud/stolencard")
+@RestController
+@RequestMapping("/api/antifraud/stolencard")
 @AllArgsConstructor
 public class StolenCardController {
     StolenCardService stolenCardService;
 
     @PostMapping
-    StolenCard addStolenCard(@Valid @RequestBody StolenCardDTO stolenCardDTO){
+    StolenCard addStolenCard(@Valid @RequestBody StolenCardDTO stolenCardDTO) {
         return stolenCardService.addStolenCard(stolenCardDTO)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT));
     }
 
     @GetMapping
-    List<StolenCard> listStolenCards(){
+    List<StolenCard> listStolenCards() {
         return stolenCardService.listStolenCards();
     }
 

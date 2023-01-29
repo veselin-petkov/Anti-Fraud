@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-@RestController("/api/auth")
+@RestController
+@RequestMapping("/api/auth")
 @AllArgsConstructor
 public class UserController {
     UserService userService;
