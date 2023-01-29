@@ -55,18 +55,6 @@ public class TransactionService {
             card.setMax_MANUAL(max_MANUAL);
             cardRepository.save(card);
         }
-//        try {
-//            max_ALLOWED = cardRepository.findMaxAllowedByNumber(transactionRequest.getNumber());
-//            max_MANUAL = cardRepository.findMaxManualByNumber(transactionRequest.getNumber());
-//            log.info("try catch passed successfully");
-//            System.out.println("try catch passed successfully");
-//        }catch (RuntimeException ex){
-//            log.info(String.valueOf(ex));
-//            log.info("try catched is not passed");
-//            System.out.println("try catched is not passed");
-//        }
-        log.info(String.valueOf(max_ALLOWED));
-        System.out.println(max_ALLOWED);
         if (transactionRequest.getAmount() <= max_ALLOWED) {
             transactionResponse.setResult(ALLOWED);
         } else if (transactionRequest.getAmount() <= max_MANUAL) {
