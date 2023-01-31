@@ -1,9 +1,8 @@
 package antifraud.service;
 
-import antifraud.model.DTO.StolenCardDTO;
 import antifraud.model.StolenCard;
+import antifraud.model.dto.StolenCardDTO;
 import antifraud.repository.StolenCardRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,8 +14,11 @@ import static antifraud.mappers.ModelMapper.stolenCardDTOtoStolenCard;
 @Service
 public class StolenCardService {
 
-    @Autowired
-    StolenCardRepository stolenCardRepository;
+    final StolenCardRepository stolenCardRepository;
+
+    public StolenCardService(StolenCardRepository stolenCardRepository) {
+        this.stolenCardRepository = stolenCardRepository;
+    }
 
     @Transactional
     public Optional<StolenCard> addStolenCard(StolenCardDTO stolenCardDTO) {

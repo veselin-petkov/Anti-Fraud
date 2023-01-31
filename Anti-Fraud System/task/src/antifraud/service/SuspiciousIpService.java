@@ -1,9 +1,8 @@
 package antifraud.service;
 
-import antifraud.model.DTO.SuspiciousIpDTO;
 import antifraud.model.SuspiciousIp;
+import antifraud.model.dto.SuspiciousIpDTO;
 import antifraud.repository.SuspiciousIpRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,8 +13,11 @@ import static antifraud.mappers.ModelMapper.suspiciousIpDTOtoSuspiciousIp;
 
 @Service
 public class SuspiciousIpService {
-    @Autowired
-    SuspiciousIpRepository suspiciousIpRepository;
+    final SuspiciousIpRepository suspiciousIpRepository;
+
+    public SuspiciousIpService(SuspiciousIpRepository suspiciousIpRepository) {
+        this.suspiciousIpRepository = suspiciousIpRepository;
+    }
 
     @Transactional
     public Optional<SuspiciousIp> addSuspiciousIp(SuspiciousIpDTO ipDTO) {

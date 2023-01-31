@@ -20,7 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static antifraud.exception.ExceptionMessages.transactionNotFound;
+import static antifraud.exception.ExceptionMessages.TRANSACTION_NOT_FOUND;
 import static antifraud.mappers.ModelMapper.transactionRequestToTransaction;
 import static antifraud.model.enums.TransactionResult.*;
 
@@ -51,12 +51,9 @@ public class TransactionService {
             maxAllowed = card.getMaxAllowed();
             maxManual = card.getMaxManual();
         } else {
-            card = new Card();
-            card.setNumber(transactionRequest.getNumber());
-            card.setMaxAllowed(maxAllowed);
-            card.setMaxManual(maxManual);
-            cardRepository.save(card);
+            saveCard(transactionRequest.getNumber(), maxAllowed, maxManual);
         }
+
         if (transactionRequest.getAmount() <= maxAllowed) {
             transactionResponse.setResult(ALLOWED);
         } else if (transactionRequest.getAmount() <= maxManual) {
@@ -81,6 +78,7 @@ public class TransactionService {
                 info.remove("amount");
             }
         }
+
         transactionRepository.save(transaction);
         List<Transaction> transactionHistory = transactionRepository.findByNumberAndDateBetween
                 (transactionRequest.getNumber(), transactionRequest.getDate().minusHours(1), transactionRequest.getDate());
@@ -113,6 +111,14 @@ public class TransactionService {
         transactionRepository.save(transaction);
 
         return transactionResponse;
+    }
+
+    private void saveCard(String cardNumber, int maxAllowed, int maxManual) {
+        Card card = new Card();
+        card.setNumber(cardNumber);
+        card.setMaxAllowed(maxAllowed);
+        card.setMaxManual(maxManual);
+        cardRepository.save(card);
     }
 
     private TransactionResult checkNumberOf(long nUniqueRequests) {
@@ -207,7 +213,7 @@ public class TransactionService {
     public List<Transaction> getTransactionById(String number) {
         List<Transaction> list = transactionRepository.findAllByNumber(number);
         if (list.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,transactionNotFound);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, TRANSACTION_NOT_FOUND);
         } else {
             return list;
         }

@@ -1,12 +1,12 @@
 package antifraud.mappers;
 
-import antifraud.model.DTO.StolenCardDTO;
-import antifraud.model.DTO.SuspiciousIpDTO;
-import antifraud.model.DTO.UserDTO;
 import antifraud.model.StolenCard;
 import antifraud.model.SuspiciousIp;
 import antifraud.model.Transaction;
 import antifraud.model.User;
+import antifraud.model.dto.StolenCardDTO;
+import antifraud.model.dto.SuspiciousIpDTO;
+import antifraud.model.dto.UserDTO;
 import antifraud.model.request.TransactionRequest;
 import antifraud.model.response.UserResponse;
 

@@ -1,4 +1,4 @@
-package antifraud.model.DTO;
+package antifraud.model.dto;
 
 import lombok.Getter;
 import lombok.Setter;

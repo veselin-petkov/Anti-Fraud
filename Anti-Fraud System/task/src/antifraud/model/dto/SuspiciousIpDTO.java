@@ -1,4 +1,4 @@
-package antifraud.model.DTO;
+package antifraud.model.dto;
 
 import antifraud.validation.IpAddress;
 import com.fasterxml.jackson.annotation.JsonProperty;

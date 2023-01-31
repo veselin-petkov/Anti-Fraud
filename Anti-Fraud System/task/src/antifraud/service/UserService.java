@@ -1,9 +1,9 @@
 package antifraud.service;
 
 import antifraud.mappers.ModelMapper;
-import antifraud.model.DTO.UserDTO;
 import antifraud.model.User;
 import antifraud.model.delete.DeletedUser;
+import antifraud.model.dto.UserDTO;
 import antifraud.model.enums.AccountStatus;
 import antifraud.model.enums.Roles;
 import antifraud.model.request.UserRoleRequest;
@@ -11,7 +11,6 @@ import antifraud.model.request.UserStatusRequest;
 import antifraud.model.response.UserResponse;
 import antifraud.model.response.UserStatusChangeResponse;
 import antifraud.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,10 +24,13 @@ import static antifraud.mappers.ModelMapper.userToUserResponse;
 
 @Service
 public class UserService {
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    PasswordEncoder encoder;
+    final UserRepository userRepository;
+    final PasswordEncoder encoder;
+
+    public UserService(UserRepository userRepository, PasswordEncoder encoder) {
+        this.userRepository = userRepository;
+        this.encoder = encoder;
+    }
 
     public UserResponse registerUser(UserDTO userDTO) {
         User user = userDTOtoUser(userDTO);
@@ -44,14 +46,14 @@ public class UserService {
                 userRepository.updateRoleById(Roles.MERCHANT, user.getId());
             }
         } catch (RuntimeException exception) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,uniqueUsername);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, UNIQUE_USERNAME);
         }
         return userToUserResponse(user);
     }
 
     public DeletedUser deleteUser(String username) {
         if (userRepository.deleteUserByUsername(username) == 0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,userNotFound);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, USER_NOT_FOUND);
         }
         return new DeletedUser(username);
     }
@@ -63,19 +65,19 @@ public class UserService {
     public UserResponse updateUserRole(UserRoleRequest userRoleRequest) {
         checkUserRole(userRoleRequest.getRole());
         User user = userRepository.findByUsername(userRoleRequest.getUsername())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,userNotFound));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, USER_NOT_FOUND));
         if (user.getRole() != userRoleRequest.getRole()) {
             userRepository.updateRoleByUsername(userRoleRequest.getRole(), userRoleRequest.getUsername());
             user.setRole(userRoleRequest.getRole());
         } else {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,presentRole);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, PRESENT_ROLE);
         }
         return userToUserResponse(user);
     }
 
     private void checkUserRole(Roles role) {
         if (!role.equals(Roles.SUPPORT) && !role.equals(Roles.MERCHANT)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,forbiddenRoles);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, FORBIDDEN_ROLE);
         }
     }
 
@@ -91,6 +93,6 @@ public class UserService {
             userRepository.save(user);
             return new UserStatusChangeResponse("User " + user.getUsername() + " unlocked!");
         }
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,invalidRequest);
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, INVALID_REQUEST);
     }
 }

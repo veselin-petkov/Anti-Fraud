@@ -1,7 +1,7 @@
 package antifraud.controller;
 
-import antifraud.model.DTO.UserDTO;
 import antifraud.model.delete.DeletedUser;
+import antifraud.model.dto.UserDTO;
 import antifraud.model.request.UserRoleRequest;
 import antifraud.model.request.UserStatusRequest;
 import antifraud.model.response.UserResponse;
