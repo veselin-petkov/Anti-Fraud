@@ -19,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+import static antifraud.exception.ExceptionMessages.*;
 import static antifraud.mappers.ModelMapper.*;
 
 @Service
@@ -42,14 +43,14 @@ public class UserService {
                 userRepository.updateRoleById(Roles.MERCHANT, user.getId());
             }
         } catch (RuntimeException exception) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT);
+            throw new ResponseStatusException(HttpStatus.CONFLICT,uniqueUsername);
         }
         return userToUserResponse(user);
     }
 
     public DeletedUser deleteUser(String username) {
         if (userRepository.deleteUserByUsername(username) == 0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,userNotFound);
         }
         return new DeletedUser(username);
     }
@@ -60,26 +61,26 @@ public class UserService {
 
     public UserResponse updateUserRole(UserRoleRequest userRoleRequest) {
         checkUserRole(userRoleRequest.getRole());
-        User user = userRepository.findByUsername(userRoleRequest.getUsername());
-        if (user==null) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        User user = userRepository.findByUsername(userRoleRequest.getUsername())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,userNotFound));
         if (user.getRole() != userRoleRequest.getRole()) {
             userRepository.updateRoleByUsername(userRoleRequest.getRole(), userRoleRequest.getUsername());
             user.setRole(userRoleRequest.getRole());
         } else {
-            throw new ResponseStatusException(HttpStatus.CONFLICT);
+            throw new ResponseStatusException(HttpStatus.CONFLICT,presentRole);
         }
         return userToUserResponse(user);
     }
 
-
     private void checkUserRole(Roles role) {
         if (!role.equals(Roles.SUPPORT) && !role.equals(Roles.MERCHANT)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"You can't set ADMINISTRATOR or ANONYMOUS role");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,forbiddenRoles);
         }
     }
 
     public UserStatusChangeResponse changeUserStatus(UserStatusRequest userStatusRequest) {
-        User user = userRepository.findByUsername(userStatusRequest.getUsername());
+        User user = userRepository.findByUsername(userStatusRequest.getUsername())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         if (user.isAccountNonLocked() && userStatusRequest.getOperation().equals(AccountStatus.LOCK)) {
             user.setAccountNonLocked(false);
             userRepository.save(user);
@@ -89,6 +90,6 @@ public class UserService {
             userRepository.save(user);
             return new UserStatusChangeResponse("User " + user.getUsername() + " unlocked!");
         }
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Invalid request!");
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,invalidRequest);
     }
 }

@@ -20,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static antifraud.exception.ExceptionMessages.transactionNotFound;
 import static antifraud.mappers.ModelMapper.transactionRequestToTransaction;
 import static antifraud.model.enums.TransactionResult.*;
 
@@ -42,9 +43,7 @@ public class TransactionService {
         List<String> info = new ArrayList<>();
         Transaction transaction = transactionRequestToTransaction(transactionRequest);
         boolean manual = false;
-
         Card card = cardRepository.findByNumber(transactionRequest.getNumber());
-
         int maxAllowed = transactionProperty.getInitialMaxAllowed();
         int maxManual = transactionProperty.getInitialMaxManual();
 
@@ -208,7 +207,7 @@ public class TransactionService {
     public List<Transaction> getTransactionById(String number) {
         List<Transaction> list = transactionRepository.findAllByNumber(number);
         if (list.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,transactionNotFound);
         } else {
             return list;
         }
