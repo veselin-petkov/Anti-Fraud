@@ -24,4 +24,5 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.5'
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 }

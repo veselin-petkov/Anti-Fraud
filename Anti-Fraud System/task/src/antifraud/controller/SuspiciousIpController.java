@@ -4,9 +4,11 @@ import antifraud.model.DTO.SuspiciousIpDTO;
 import antifraud.model.delete.DeletedIp;
 import antifraud.model.SuspiciousIp;
 import antifraud.service.SuspiciousIpService;
+import antifraud.validation.IpAddress;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -17,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/antifraud/suspicious-ip")
 @AllArgsConstructor
+@Validated
 public class SuspiciousIpController {
     SuspiciousIpService suspiciousIpService;
 
@@ -31,7 +34,7 @@ public class SuspiciousIpController {
     }
 
     @DeleteMapping("/{ip}")
-    DeletedIp deleteSuspiciousIp(@PathVariable String ip) {
+    DeletedIp deleteSuspiciousIp(@IpAddress @PathVariable String ip) {
         if (suspiciousIpService.deleteSuspiciousIp(ip)) {
             return new DeletedIp(ip);
         } else {

@@ -1,6 +1,7 @@
 package antifraud.model.request;
 
 import antifraud.model.enums.Region;
+import antifraud.validation.IpAddress;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -33,7 +34,7 @@ public class TransactionRequest {
     @Positive
     @NotNull
     Long amount;
-    @NotEmpty
+    @IpAddress
     String ip;
     @CreditCardNumber
     String number;

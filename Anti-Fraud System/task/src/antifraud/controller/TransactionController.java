@@ -41,7 +41,7 @@ public class TransactionController {
 
     @PreAuthorize("hasRole('SUPPORT')")
     @GetMapping("/history/{number}")
-    List<Transaction> getTransactionById(@CreditCardNumber @PathVariable("number") String number) {
+    List<Transaction> getTransactionByCardNumber(@CreditCardNumber @PathVariable("number") String number) {
         return transactionService.getTransactionById(number);
     }
 }

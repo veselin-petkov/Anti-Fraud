@@ -14,6 +14,8 @@ public class Card {
     private Long id;
     @Column(unique = true)
     String number;
-    int max_ALLOWED;
-    int max_MANUAL;
+    @Column(name = "max_allowed")
+    int maxAllowed;
+    @Column(name = "max_manual")
+    int maxManual;
 }

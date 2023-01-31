@@ -1,17 +1,16 @@
 package antifraud.model.DTO;
 
+import antifraud.validation.IpAddress;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotEmpty;
 
 @Getter
 @Setter
 public class SuspiciousIpDTO {
-
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     Long id;
-    @NotEmpty
+    @IpAddress
     String ip;
 }

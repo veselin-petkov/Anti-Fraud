@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static antifraud.mappers.ModelMapper.stolenCardDTOtoStolenCard;
-import static antifraud.utils.Utils.checkCardNumber;
 
 @Service
 public class StolenCardService {
@@ -21,7 +20,6 @@ public class StolenCardService {
 
     @Transactional
     public Optional<StolenCard> addStolenCard(StolenCardDTO stolenCardDTO) {
-       // checkCardNumber(stolenCardDTO.getNumber());
         if (stolenCardRepository.existsByNumber(stolenCardDTO.getNumber())) {
             return Optional.empty();
         }
@@ -35,7 +33,6 @@ public class StolenCardService {
 
     @Transactional
     public boolean deleteStolenCard(String number) {
-        checkCardNumber(number);
         return stolenCardRepository.deleteByNumber(number) == 1;
     }
 }

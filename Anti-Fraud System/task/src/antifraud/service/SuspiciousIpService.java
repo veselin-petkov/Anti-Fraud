@@ -11,17 +11,14 @@ import java.util.List;
 import java.util.Optional;
 
 import static antifraud.mappers.ModelMapper.suspiciousIpDTOtoSuspiciousIp;
-import static antifraud.utils.Utils.checkIpFormat;
 
 @Service
 public class SuspiciousIpService {
-
     @Autowired
     SuspiciousIpRepository suspiciousIpRepository;
 
     @Transactional
     public Optional<SuspiciousIp> addSuspiciousIp(SuspiciousIpDTO ipDTO) {
-        checkIpFormat(ipDTO.getIp());
         if (suspiciousIpRepository.existsByIp(ipDTO.getIp())) {
             return Optional.empty();
         }
@@ -31,7 +28,6 @@ public class SuspiciousIpService {
 
     @Transactional
     public boolean deleteSuspiciousIp(String ip) {
-        checkIpFormat(ip);
         return suspiciousIpRepository.deleteByIp(ip) == 1;
     }
 

@@ -74,7 +74,7 @@ public class UserService {
 
     private void checkUserRole(Roles role) {
         if (!role.equals(Roles.SUPPORT) && !role.equals(Roles.MERCHANT)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"You can't set ADMINISTRATOR or ANONYMOUS role");
         }
     }
 
@@ -89,6 +89,6 @@ public class UserService {
             userRepository.save(user);
             return new UserStatusChangeResponse("User " + user.getUsername() + " unlocked!");
         }
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Invalid request!");
     }
 }

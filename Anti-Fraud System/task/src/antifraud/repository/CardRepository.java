@@ -11,15 +11,18 @@ import org.springframework.transaction.annotation.Transactional;
 public interface CardRepository extends JpaRepository<Card, Long> {
     @Transactional
     @Modifying
-    @Query("update Card c set c.max_MANUAL = ?1 where c.number = ?2")
-    int updateMax_MANUALByNumber(int max_MANUAL, String number);
+    @Query("update Card c set c.maxAllowed = ?1, c.maxManual = ?2 where c.number = ?3")
+    int updateMaxAllowedAndMaxManualByNumber(int max_ALLOWED, int max_MANUAL, String number);
+
     @Transactional
     @Modifying
-    @Query("update Card c set c.max_ALLOWED = ?1 where c.number = ?2")
-    int updateMax_ALLOWEDByNumber(int max_ALLOWED, String number);
- //   @Query("select max_ALLOWED from Card where number = ?1")
-    int findMaxAllowedByNumber(String number);
- //   @Query("select max_MANUAL from Card where number = ?1")
-    int findMaxManualByNumber(String number);
+    @Query("update Card c set c.maxManual = ?1 where c.number = ?2")
+    int updateMaxManualByNumber(int max_MANUAL, String number);
+
+    @Transactional
+    @Modifying
+    @Query("update Card c set c.maxAllowed = ?1 where c.number = ?2")
+    int updateMaxAllowedByNumber(int max_ALLOWED, String number);
+
     Card findByNumber(String number);
 }

@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ADMINISTRATOR')")
-    @DeleteMapping({"/user/{username}", "/api/auth/user"})
+    @DeleteMapping({"/user/{username}"})
     DeletedUser deleteUser(@PathVariable(required = false) String username){
         return userService.deleteUser(username);
     }

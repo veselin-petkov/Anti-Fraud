@@ -6,16 +6,18 @@ import org.springframework.context.annotation.Configuration;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-@Configuration
 @AllArgsConstructor
+@EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
-
     RestAuthenticationEntryPoint restAuthenticationEntryPoint;
 
     @Bean
@@ -29,19 +31,8 @@ public class SecurityConfig {
                 .mvcMatchers(HttpMethod.POST, "/api/antifraud/transaction").hasRole("MERCHANT")
                 .mvcMatchers("/actuator/shutdown").permitAll() // needs to run test
                 // other matchers
-                .antMatchers("/api/auth/access/**").hasRole("ADMINISTRATOR")
-                .antMatchers("/api/auth/role/**").hasRole("ADMINISTRATOR")
-                .antMatchers("/api/auth/user/**").hasRole("ADMINISTRATOR")
-                .antMatchers("/api/auth/list").hasAnyRole("ADMINISTRATOR","SUPPORT")
-                .antMatchers("/api/antifraud/suspicious-ip/**").hasRole("SUPPORT")
-                .antMatchers("/api/antifraud/stolencard/**").hasRole("SUPPORT")
-                .antMatchers("/api/antifraud/suspicious-ip").hasRole("SUPPORT")
-                .antMatchers("/api/antifraud/stolencard").hasRole("SUPPORT")
-                .antMatchers(HttpMethod.PUT,"/api/antifraud/transaction").hasRole("SUPPORT")
-                .antMatchers("/api/antifraud/history/**").hasRole("SUPPORT")
-                .antMatchers("/api/antifraud/history").hasRole("SUPPORT")
-//                .mvcMatchers("/api/**").authenticated()
-//                .anyRequest().denyAll()
+                .mvcMatchers("/api/**").authenticated()
+                //.anyRequest().denyAll()
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS); // no session

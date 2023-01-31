@@ -5,8 +5,10 @@ import antifraud.model.delete.DeleteCard;
 import antifraud.model.StolenCard;
 import antifraud.service.StolenCardService;
 import lombok.AllArgsConstructor;
+import org.hibernate.validator.constraints.CreditCardNumber;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -17,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/antifraud/stolencard")
 @AllArgsConstructor
+@Validated
 public class StolenCardController {
     StolenCardService stolenCardService;
 
@@ -32,7 +35,7 @@ public class StolenCardController {
     }
 
     @DeleteMapping("/{number}")
-    DeleteCard deleteStolenCard(@PathVariable String number) {
+    DeleteCard deleteStolenCard(@CreditCardNumber @PathVariable String number) {
         if (stolenCardService.deleteStolenCard(number)) {
             return new DeleteCard(number);
         } else {
