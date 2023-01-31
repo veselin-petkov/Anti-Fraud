@@ -5,8 +5,10 @@ import javax.validation.ConstraintValidatorContext;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Validator for @IpAddress annotation
+ */
 public class IpAddressValidator implements ConstraintValidator<IpAddress, String> {
-
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
         try {

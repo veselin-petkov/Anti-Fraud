@@ -12,7 +12,6 @@ import antifraud.repository.StolenCardRepository;
 import antifraud.repository.SuspiciousIpRepository;
 import antifraud.repository.TransactionRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -27,16 +26,19 @@ import static antifraud.model.enums.TransactionResult.*;
 @Slf4j
 @Service
 public class TransactionService {
-    @Autowired
-    private TransactionRepository transactionRepository;
-    @Autowired
-    StolenCardRepository stolenCardRepository;
-    @Autowired
-    SuspiciousIpRepository suspiciousIpRepository;
-    @Autowired
-    CardRepository cardRepository;
-    @Autowired
-    TransactionProperty transactionProperty;
+    final TransactionRepository transactionRepository;
+    final StolenCardRepository stolenCardRepository;
+    final SuspiciousIpRepository suspiciousIpRepository;
+    final CardRepository cardRepository;
+    final TransactionProperty transactionProperty;
+
+    public TransactionService(TransactionRepository transactionRepository, StolenCardRepository stolenCardRepository, SuspiciousIpRepository suspiciousIpRepository, CardRepository cardRepository, TransactionProperty transactionProperty) {
+        this.transactionRepository = transactionRepository;
+        this.stolenCardRepository = stolenCardRepository;
+        this.suspiciousIpRepository = suspiciousIpRepository;
+        this.cardRepository = cardRepository;
+        this.transactionProperty = transactionProperty;
+    }
 
     public TransactionResponse processTransaction(TransactionRequest transactionRequest) {
         TransactionResponse transactionResponse = new TransactionResponse();

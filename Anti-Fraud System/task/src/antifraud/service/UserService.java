@@ -32,6 +32,11 @@ public class UserService {
         this.encoder = encoder;
     }
 
+    /**
+     * @param userDTO
+     * @return register user in the database
+     * throwing 409 Conflict when username is already taken
+     */
     public UserResponse registerUser(UserDTO userDTO) {
         User user = userDTOtoUser(userDTO);
         user.setPassword(encoder.encode(user.getPassword()));
