@@ -1,8 +1,8 @@
 package antifraud.controller;
 
 import antifraud.model.DTO.StolenCardDTO;
-import antifraud.model.delete.DeleteCard;
 import antifraud.model.StolenCard;
+import antifraud.model.delete.DeleteCard;
 import antifraud.service.StolenCardService;
 import lombok.AllArgsConstructor;
 import org.hibernate.validator.constraints.CreditCardNumber;

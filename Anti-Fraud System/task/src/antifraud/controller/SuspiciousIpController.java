@@ -1,8 +1,8 @@
 package antifraud.controller;
 
 import antifraud.model.DTO.SuspiciousIpDTO;
-import antifraud.model.delete.DeletedIp;
 import antifraud.model.SuspiciousIp;
+import antifraud.model.delete.DeletedIp;
 import antifraud.service.SuspiciousIpService;
 import antifraud.validation.IpAddress;
 import lombok.AllArgsConstructor;

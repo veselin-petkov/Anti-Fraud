@@ -1,8 +1,8 @@
 package antifraud.service;
 
 import antifraud.mappers.ModelMapper;
-import antifraud.model.*;
 import antifraud.model.DTO.UserDTO;
+import antifraud.model.User;
 import antifraud.model.delete.DeletedUser;
 import antifraud.model.enums.AccountStatus;
 import antifraud.model.enums.Roles;
@@ -20,7 +20,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 import static antifraud.exception.ExceptionMessages.*;
-import static antifraud.mappers.ModelMapper.*;
+import static antifraud.mappers.ModelMapper.userDTOtoUser;
+import static antifraud.mappers.ModelMapper.userToUserResponse;
 
 @Service
 public class UserService {
