@@ -2,7 +2,6 @@ package antifraud.service;
 
 import antifraud.model.StolenCard;
 import antifraud.model.dto.StolenCardDTO;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;

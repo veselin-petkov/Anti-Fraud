@@ -136,10 +136,6 @@ public class TransactionServiceImpl implements TransactionService {
         return stolenCardRepository.existsByNumber(number);
     }
 
-    /**
-     * @param ip
-     * @return true or false if the ip is in the blacklist
-     */
     private boolean checkForSuspiciousIp(String ip) {
         return suspiciousIpRepository.existsByIp(ip);
     }
