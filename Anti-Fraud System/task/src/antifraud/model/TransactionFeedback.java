@@ -11,5 +11,6 @@ import javax.validation.constraints.NotNull;
 public class TransactionFeedback {
     @NotNull
     Long transactionId;
+    @NotNull
     TransactionResult feedback;
 }

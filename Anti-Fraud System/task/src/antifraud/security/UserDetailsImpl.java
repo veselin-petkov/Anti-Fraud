@@ -1,4 +1,4 @@
-package antifraud.service.impl;
+package antifraud.security;
 
 import antifraud.model.User;
 import org.springframework.security.core.GrantedAuthority;

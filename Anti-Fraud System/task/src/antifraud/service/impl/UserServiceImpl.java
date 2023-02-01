@@ -11,6 +11,7 @@ import antifraud.model.request.UserStatusRequest;
 import antifraud.model.response.UserResponse;
 import antifraud.model.response.UserStatusChangeResponse;
 import antifraud.repository.UserRepository;
+import antifraud.security.UserDetailsImpl;
 import antifraud.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -39,11 +40,6 @@ public class UserServiceImpl implements UserService {
         this.encoder = encoder;
     }
 
-    /**
-     * @param userDTO
-     * @return register user in the database
-     * throwing 409 Conflict when username is already taken
-     */
     @Override
     public UserResponse registerUser(UserDTO userDTO) {
         User user = userDTOtoUser(userDTO);
