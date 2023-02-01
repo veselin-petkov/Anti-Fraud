@@ -37,4 +37,16 @@ public class TransactionRequest {
     Region region;
     @DateTimeFormat(pattern = "yyyy-MM-ddTHH:mm:ss")
     LocalDateTime date;
+
+    @Override
+    public String toString() {
+        return "TransactionRequest{" +
+                "id=" + id +
+                ", amount=" + amount +
+                ", ip='" + ip + '\'' +
+                ", number='" + number + '\'' +
+                ", region=" + region +
+                ", date=" + date +
+                '}';
+    }
 }

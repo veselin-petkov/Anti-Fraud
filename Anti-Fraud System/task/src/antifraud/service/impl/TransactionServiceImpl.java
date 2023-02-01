@@ -17,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static antifraud.exception.ExceptionMessages.TRANSACTION_NOT_FOUND;
@@ -44,10 +43,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     public TransactionResponse processTransaction(TransactionRequest transactionRequest) {
-        TransactionResponse transactionResponse = new TransactionResponse();
-        List<String> info = new ArrayList<>();
         Transaction transaction = transactionRequestToTransaction(transactionRequest);
-        boolean manual = false;
         Card card = cardRepository.findByNumber(transactionRequest.getNumber());
         int maxAllowed = transactionProperty.getInitialMaxAllowed();
         int maxManual = transactionProperty.getInitialMaxManual();
@@ -58,32 +54,6 @@ public class TransactionServiceImpl implements TransactionService {
         } else {
             saveCard(transactionRequest.getNumber(), maxAllowed, maxManual);
         }
-
-        if (transactionRequest.getAmount() <= maxAllowed) {
-            transactionResponse.setResult(ALLOWED);
-        } else if (transactionRequest.getAmount() <= maxManual) {
-            transactionResponse.setResult(MANUAL_PROCESSING);
-            info.add("amount");
-            manual = true;
-        } else {
-            transactionResponse.setResult(PROHIBITED);
-            info.add("amount");
-        }
-        if (checkForStolenCard(transactionRequest.getNumber())) {
-            transactionResponse.setResult(PROHIBITED);
-            info.add("card-number");
-            if (manual) {
-                info.remove("amount");
-            }
-        }
-        if (checkForSuspiciousIp(transactionRequest.getIp())) {
-            transactionResponse.setResult(PROHIBITED);
-            info.add("ip");
-            if (manual) {
-                info.remove("amount");
-            }
-        }
-
         transactionRepository.save(transaction);
         List<Transaction> transactionHistory = transactionRepository.findByNumberAndDateBetween
                 (transactionRequest.getNumber(), transactionRequest.getDate().minusHours(1), transactionRequest.getDate());
@@ -91,31 +61,43 @@ public class TransactionServiceImpl implements TransactionService {
         long uniqueIps = transactionHistory.stream().map(Transaction::getIp).distinct().count();
         long uniqueRegions = transactionHistory.stream().map(Transaction::getRegion).distinct().count();
 
-        if (checkNumberOf(uniqueRegions).equals(PROHIBITED)) {
-            transactionResponse.setResult(PROHIBITED);
-            info.add("region-correlation");
-        } else if (checkNumberOf(uniqueRegions).equals(MANUAL_PROCESSING)) {
-            transactionResponse.setResult(MANUAL_PROCESSING);
-            info.add("region-correlation");
-        }
+        TransactionResult ipCorrelation = checkNumberOf(uniqueIps);
+        TransactionResult regionCorrelation = checkNumberOf(uniqueRegions);
+        TransactionResult amount = checkTransactionAmount(transactionRequest.getAmount(),maxAllowed,maxManual);
+        TransactionResult stolenCard = checkForStolenCard(transactionRequest.getNumber()) ? PROHIBITED : ALLOWED;
+        TransactionResult suspiciousIp = checkForSuspiciousIp(transactionRequest.getIp()) ? PROHIBITED : ALLOWED;
 
-        if (checkNumberOf(uniqueIps).equals(PROHIBITED)) {
-            transactionResponse.setResult(PROHIBITED);
-            info.add("ip-correlation");
-        } else if (checkNumberOf(uniqueIps).equals(MANUAL_PROCESSING)) {
-            transactionResponse.setResult(MANUAL_PROCESSING);
-            info.add("ip-correlation");
-        }
+        List<TransactionResult> resultList = List.of(ipCorrelation, regionCorrelation, amount, stolenCard, suspiciousIp);
+        TransactionResult transactionResult = getTransactionResult(resultList);
 
-        if (info.isEmpty()) {
-            transactionResponse.setInfo("none");
-        } else {
-            transactionResponse.setInfo(String.join(", ", info));
-        }
-        transaction.setResult(transactionResponse.getResult());
+        transaction.setResult(transactionResult);
         transactionRepository.save(transaction);
+        if (transactionResult == ALLOWED) return new TransactionResponse(ALLOWED, "none");
+        if (transactionResult != PROHIBITED && amount == MANUAL_PROCESSING) {
+            return new TransactionResponse(MANUAL_PROCESSING, "amount");
+        }
+        StringBuilder info = new StringBuilder()
+                .append(amount == transactionResult ? "amount, " : "")
+                .append(stolenCard == transactionResult ? "card-number, " : "")
+                .append(suspiciousIp == transactionResult ? "ip, " : "")
+                .append(ipCorrelation == transactionResult ? "ip-correlation, " : "")
+                .append(regionCorrelation == transactionResult ? "region-correlation, " : "");
+        info.setLength(info.length() - 2);
+        return new TransactionResponse(transactionResult, info.toString());
+    }
 
-        return transactionResponse;
+    private TransactionResult getTransactionResult(List<TransactionResult> list) {
+        TransactionResult transactionResult = ALLOWED;
+        for (var res : list) {
+            if (res == MANUAL_PROCESSING) {
+                transactionResult = MANUAL_PROCESSING;
+            }
+            if (res == PROHIBITED) {
+                transactionResult = res;
+                break;
+            }
+        }
+        return transactionResult;
     }
 
     private void saveCard(String cardNumber, int maxAllowed, int maxManual) {
@@ -127,12 +109,18 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     private TransactionResult checkNumberOf(long nUniqueRequests) {
-        if (nUniqueRequests <= 2) {
+        if (nUniqueRequests < transactionProperty.getRegionAndIpLimit()) {
             return ALLOWED;
         }
-        return nUniqueRequests == 3 ? MANUAL_PROCESSING :
+        return nUniqueRequests == transactionProperty.getRegionAndIpLimit() ? MANUAL_PROCESSING :
                 PROHIBITED;
     }
+
+    private TransactionResult checkTransactionAmount(long amount,int maxAllowed,int maxManual) {
+        if (amount <= maxAllowed) return ALLOWED;
+        return amount <= maxManual ? MANUAL_PROCESSING : PROHIBITED;
+    }
+
 
     private boolean checkForStolenCard(String number) {
         return stolenCardRepository.existsByNumber(number);

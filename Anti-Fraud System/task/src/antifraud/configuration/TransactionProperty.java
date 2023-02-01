@@ -26,4 +26,6 @@ public class TransactionProperty {
     private double currentLimitModifier;
     @Positive
     private double valueFromTransactionModifier;
+    @Positive
+    private int regionAndIpLimit;
 }
