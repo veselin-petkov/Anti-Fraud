@@ -22,7 +22,9 @@ import java.util.List;
 
 import static antifraud.exception.ExceptionMessages.TRANSACTION_NOT_FOUND;
 import static antifraud.mappers.ModelMapper.transactionRequestToTransaction;
-import static antifraud.model.enums.TransactionResult.*;
+import static antifraud.model.enums.TransactionResult.ALLOWED;
+import static antifraud.model.enums.TransactionResult.MANUAL_PROCESSING;
+import static antifraud.model.enums.TransactionResult.PROHIBITED;
 
 @Slf4j
 @Service

@@ -21,7 +21,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
-import static antifraud.exception.ExceptionMessages.*;
+import static antifraud.exception.ExceptionMessages.FORBIDDEN_ROLE;
+import static antifraud.exception.ExceptionMessages.INVALID_REQUEST;
+import static antifraud.exception.ExceptionMessages.PRESENT_ROLE;
+import static antifraud.exception.ExceptionMessages.UNIQUE_USERNAME;
+import static antifraud.exception.ExceptionMessages.USER_NOT_FOUND;
 import static antifraud.mappers.ModelMapper.userDTOtoUser;
 import static antifraud.mappers.ModelMapper.userToUserResponse;
 
