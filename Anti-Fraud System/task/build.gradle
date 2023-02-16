@@ -17,12 +17,22 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation group: 'org.hibernate', name: 'hibernate-validator', version: '6.1.0.Final'
     implementation 'org.projectlombok:lombok:1.18.24'
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'com.h2database:h2'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.5'
+    implementation 'org.mockito:mockito-junit-jupiter:4.5.1'
+    implementation 'org.mockito:mockito-inline:5.1.1'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.5'
+
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testCompileOnly 'org.projectlombok:lombok:1.18.24'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+
 }

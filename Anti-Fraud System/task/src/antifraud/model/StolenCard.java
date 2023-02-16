@@ -18,4 +18,13 @@ public class StolenCard {
     @Column(nullable = false)
     String number;
 
+
+    public StolenCard(Long id, String number) {
+        this.id = id;
+        this.number = number;
+    }
+
+    public StolenCard() {
+
+    }
 }

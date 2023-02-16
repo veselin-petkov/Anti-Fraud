@@ -1,4 +1,4 @@
-package antifraud.model.delete;
+package antifraud.model.response.delete;
 
 
 public record DeletedUser(String username,String status) {

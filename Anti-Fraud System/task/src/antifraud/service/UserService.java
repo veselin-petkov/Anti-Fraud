@@ -1,6 +1,6 @@
 package antifraud.service;
 
-import antifraud.model.delete.DeletedUser;
+import antifraud.model.response.delete.DeletedUser;
 import antifraud.model.dto.UserDTO;
 import antifraud.model.request.UserRoleRequest;
 import antifraud.model.request.UserStatusRequest;
