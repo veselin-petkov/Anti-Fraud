@@ -1,7 +1,7 @@
 package antifraud.controller;
 
 import antifraud.model.StolenCard;
-import antifraud.model.delete.DeleteCard;
+import antifraud.model.response.delete.DeleteCard;
 import antifraud.model.dto.StolenCardDTO;
 import antifraud.service.StolenCardService;
 import lombok.AllArgsConstructor;

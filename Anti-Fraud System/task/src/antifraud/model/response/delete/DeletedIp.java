@@ -1,4 +1,4 @@
-package antifraud.model.delete;
+package antifraud.model.response.delete;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;

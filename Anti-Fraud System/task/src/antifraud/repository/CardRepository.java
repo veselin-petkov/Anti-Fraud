@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface CardRepository extends JpaRepository<Card, Long> {
+    boolean existsByNumber(String number);
     @Transactional
     @Modifying
     @Query("update Card c set c.maxAllowed = ?1, c.maxManual = ?2 where c.number = ?3")

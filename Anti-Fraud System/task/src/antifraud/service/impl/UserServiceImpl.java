@@ -2,7 +2,7 @@ package antifraud.service.impl;
 
 import antifraud.mappers.ModelMapper;
 import antifraud.model.User;
-import antifraud.model.delete.DeletedUser;
+import antifraud.model.response.delete.DeletedUser;
 import antifraud.model.dto.UserDTO;
 import antifraud.model.enums.AccountStatus;
 import antifraud.model.enums.Roles;

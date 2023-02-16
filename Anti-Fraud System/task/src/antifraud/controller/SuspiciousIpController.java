@@ -1,7 +1,7 @@
 package antifraud.controller;
 
 import antifraud.model.SuspiciousIp;
-import antifraud.model.delete.DeletedIp;
+import antifraud.model.response.delete.DeletedIp;
 import antifraud.model.dto.SuspiciousIpDTO;
 import antifraud.service.SuspiciousIpService;
 import antifraud.validation.IpAddress;

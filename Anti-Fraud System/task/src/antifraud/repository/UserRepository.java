@@ -13,6 +13,7 @@ import java.util.Optional;
 @Repository
 @Transactional
 public interface UserRepository extends JpaRepository<User, Long> {
+    boolean existsByUsername(String username);
     @Modifying
     @Query("update User u set u.role = ?1 where u.id = ?2")
     int updateRoleById(Roles role, Long id);
