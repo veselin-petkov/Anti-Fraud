@@ -13,4 +13,6 @@ public interface SuspiciousIpService {
     boolean deleteSuspiciousIp(String ip);
 
     List<SuspiciousIp> listSuspiciousIp();
+
+    boolean existsByIp(String ip);
 }

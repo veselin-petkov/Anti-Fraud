@@ -25,4 +25,19 @@ public class CardServiceImpl implements CardService {
     public Card save(Card regularCard) {
         return cardRepository.save(regularCard);
     }
+
+    @Override
+    public void updateMaxAllowedAndMaxManualByNumber(int maxAllowed, int maxManual, String number) {
+        cardRepository.updateMaxAllowedAndMaxManualByNumber(maxAllowed, maxManual, number);
+    }
+
+    @Override
+    public void updateMaxAllowedByNumber(int maxAllowed, String number) {
+        cardRepository.updateMaxAllowedByNumber(maxAllowed, number);
+    }
+
+    @Override
+    public void updateMaxManualByNumber(int maxManual, String number) {
+        cardRepository.updateMaxManualByNumber(maxManual, number);
+    }
 }

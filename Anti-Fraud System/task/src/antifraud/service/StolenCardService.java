@@ -10,4 +10,6 @@ public interface StolenCardService {
     Optional<StolenCard> addStolenCard(StolenCardDTO stolenCardDTO);
     List<StolenCard> listStolenCards();
     boolean deleteStolenCard(String number);
+
+    boolean existsByNumber(String number);
 }
