@@ -38,4 +38,9 @@ public class StolenCardServiceImpl implements StolenCardService {
     public boolean deleteStolenCard(String number) {
         return stolenCardRepository.deleteByNumber(number) == 1;
     }
+
+    @Override
+    public boolean existsByNumber(String number) {
+        return stolenCardRepository.existsByNumber(number);
+    }
 }

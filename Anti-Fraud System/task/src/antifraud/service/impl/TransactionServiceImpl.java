@@ -7,10 +7,10 @@ import antifraud.model.TransactionFeedback;
 import antifraud.model.enums.TransactionResult;
 import antifraud.model.request.TransactionRequest;
 import antifraud.model.response.TransactionResponse;
-import antifraud.repository.CardRepository;
-import antifraud.repository.StolenCardRepository;
-import antifraud.repository.SuspiciousIpRepository;
 import antifraud.repository.TransactionRepository;
+import antifraud.service.CardService;
+import antifraud.service.StolenCardService;
+import antifraud.service.SuspiciousIpService;
 import antifraud.service.TransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -29,22 +29,22 @@ import static antifraud.model.enums.TransactionResult.PROHIBITED;
 @Service
 public class TransactionServiceImpl implements TransactionService {
     final TransactionRepository transactionRepository;
-    final StolenCardRepository stolenCardRepository;
-    final SuspiciousIpRepository suspiciousIpRepository;
-    final CardRepository cardRepository;
+    final StolenCardService stolenCardService;
+    final SuspiciousIpService suspiciousIpService;
+    final CardService cardService;
     final TransactionProperty transactionProperty;
 
-    public TransactionServiceImpl(TransactionRepository transactionRepository, StolenCardRepository stolenCardRepository, SuspiciousIpRepository suspiciousIpRepository, CardRepository cardRepository, TransactionProperty transactionProperty) {
+    public TransactionServiceImpl(TransactionRepository transactionRepository, StolenCardService stolenCardService, SuspiciousIpService suspiciousIpService, CardService cardService, TransactionProperty transactionProperty) {
         this.transactionRepository = transactionRepository;
-        this.stolenCardRepository = stolenCardRepository;
-        this.suspiciousIpRepository = suspiciousIpRepository;
-        this.cardRepository = cardRepository;
+        this.stolenCardService = stolenCardService;
+        this.suspiciousIpService = suspiciousIpService;
+        this.cardService = cardService;
         this.transactionProperty = transactionProperty;
     }
 
     public TransactionResponse processTransaction(TransactionRequest transactionRequest) {
         Transaction transaction = transactionRequestToTransaction(transactionRequest);
-        Card card = cardRepository.findByNumber(transactionRequest.getNumber());
+        Card card = cardService.findByNumber(transactionRequest.getNumber());
         int maxAllowed = transactionProperty.getInitialMaxAllowed();
         int maxManual = transactionProperty.getInitialMaxManual();
 
@@ -105,7 +105,7 @@ public class TransactionServiceImpl implements TransactionService {
         card.setNumber(cardNumber);
         card.setMaxAllowed(maxAllowed);
         card.setMaxManual(maxManual);
-        cardRepository.save(card);
+        cardService.save(card);
     }
 
     private TransactionResult checkNumberOf(long nUniqueRequests) {
@@ -123,18 +123,18 @@ public class TransactionServiceImpl implements TransactionService {
 
 
     private boolean checkForStolenCard(String number) {
-        return stolenCardRepository.existsByNumber(number);
+        return stolenCardService.existsByNumber(number);
     }
 
     private boolean checkForSuspiciousIp(String ip) {
-        return suspiciousIpRepository.existsByIp(ip);
+        return suspiciousIpService.existsByIp(ip);
     }
 
     public Transaction transactionFeedback(TransactionFeedback transactionFeedback) {
         Transaction transaction = transactionRepository.findById(transactionFeedback.getTransactionId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        Card card = cardRepository.findByNumber(transaction.getNumber());
+        Card card = cardService.findByNumber(transaction.getNumber());
         int maxAllowed = card.getMaxAllowed();
         int maxManual = card.getMaxManual();
 
@@ -147,27 +147,27 @@ public class TransactionServiceImpl implements TransactionService {
             maxAllowed = increaseMaxAllowed(transaction, maxAllowed);
             if (transaction.getResult() == PROHIBITED) {
                 maxManual = increaseMaxManual(transaction, maxManual);
-                cardRepository.updateMaxAllowedAndMaxManualByNumber(maxAllowed, maxManual, transaction.getNumber());
+                cardService.updateMaxAllowedAndMaxManualByNumber(maxAllowed, maxManual, transaction.getNumber());
             } else {
-                cardRepository.updateMaxAllowedByNumber(maxAllowed, transaction.getNumber());
+                cardService.updateMaxAllowedByNumber(maxAllowed, transaction.getNumber());
             }
             transaction.setFeedback(transactionFeedback.getFeedback());
         } else if (transactionFeedback.getFeedback() == MANUAL_PROCESSING) {
             if (transaction.getResult() == ALLOWED) {
                 maxAllowed = decreaseMaxAllowed(transaction, maxAllowed);
-                cardRepository.updateMaxAllowedByNumber(maxAllowed, transaction.getNumber());
+                cardService.updateMaxAllowedByNumber(maxAllowed, transaction.getNumber());
             } else {
                 maxManual = increaseMaxManual(transaction, maxManual);
-                cardRepository.updateMaxManualByNumber(maxManual, transaction.getNumber());
+                cardService.updateMaxManualByNumber(maxManual, transaction.getNumber());
             }
             transaction.setFeedback(transactionFeedback.getFeedback());
         } else if (transactionFeedback.getFeedback() == PROHIBITED) {
             maxManual = decreaseMaxManual(transaction, maxManual);
             if ((transaction.getResult() == MANUAL_PROCESSING)) {
-                cardRepository.updateMaxManualByNumber(maxManual, transaction.getNumber());
+                cardService.updateMaxManualByNumber(maxManual, transaction.getNumber());
             } else {
                 maxAllowed = decreaseMaxAllowed(transaction, maxAllowed);
-                cardRepository.updateMaxAllowedAndMaxManualByNumber(maxAllowed, maxManual, transaction.getNumber());
+                cardService.updateMaxAllowedAndMaxManualByNumber(maxAllowed, maxManual, transaction.getNumber());
             }
             transaction.setFeedback(transactionFeedback.getFeedback());
         }

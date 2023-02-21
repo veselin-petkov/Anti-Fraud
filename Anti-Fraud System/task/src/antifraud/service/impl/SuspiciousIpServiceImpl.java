@@ -37,4 +37,9 @@ public class SuspiciousIpServiceImpl implements SuspiciousIpService {
     public List<SuspiciousIp> listSuspiciousIp() {
         return suspiciousIpRepository.findAll();
     }
+
+    @Override
+    public boolean existsByIp(String ip) {
+        return suspiciousIpRepository.existsByIp(ip);
+    }
 }
