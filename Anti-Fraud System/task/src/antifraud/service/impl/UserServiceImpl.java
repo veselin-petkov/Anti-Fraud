@@ -13,6 +13,7 @@ import antifraud.model.response.UserStatusChangeResponse;
 import antifraud.repository.UserRepository;
 import antifraud.security.UserDetailsImpl;
 import antifraud.service.UserService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -34,6 +35,8 @@ import static antifraud.mappers.ModelMapper.userToUserResponse;
 public class UserServiceImpl implements UserService {
     final UserRepository userRepository;
     final PasswordEncoder encoder;
+    @Value("${user.administrator-count}")
+    private int administratorCount;
 
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder encoder) {
         this.userRepository = userRepository;
@@ -44,9 +47,10 @@ public class UserServiceImpl implements UserService {
     public UserResponse registerUser(UserDTO userDTO) {
         User user = userDTOtoUser(userDTO);
         user.setPassword(encoder.encode(user.getPassword()));
+
         try {
             userRepository.save(user);
-            if (user.getId() == 1) {
+            if (user.getId() == administratorCount) {
                 user.setRole(Roles.ADMINISTRATOR);
                 user.setAccountNonLocked(true);
                 userRepository.updateRoleById(Roles.ADMINISTRATOR, user.getId());
